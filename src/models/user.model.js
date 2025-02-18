@@ -7,7 +7,6 @@ const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    userName: { type: String, required: true, unique: true, index: true },
     email: {
       type: String,
       required: true,
@@ -34,46 +33,28 @@ const userSchema = new mongoose.Schema(
     },
     phone: { type: String, required: true },
     address: {
-      street: { type: String, required: true },
-      city: { type: String, required: true },
-      state: { type: String, required: true },
-      zipCode: { type: String, required: true },
+      type:String, required:true,
+    },
+    city: {
+      type:String, required:true,
     },
     profileImage: { type: String, default: null },
-    profile: {
-      jobTitle: { type: String, default: null },
-      company: { type: String, default: null },
-      skills: { type: [String], default: [] },
-      experience: { type: Number, default: 0 },
-      education: { type: String, default: null },
-      cv: { type: String, default: null },
-    },
+    
     refreshToken: { type: String, default: null },
     role: {
       type: String,
       enum: ["customer", "admin", "serviceProvider"],
       default: "customer",
     },
-    services: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Service",
-      },
-    ],
-    orders: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Order",
-      },
-    ],
+    
   },
   { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
+  if (!this.isModified("password")) return next();
+    
+  
   try {
     this.password = await bcrypt.hash(this.password, 10);
     next();
